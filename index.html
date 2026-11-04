@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Seu negócio no Google · Mapin</title>
+<meta name="description" content="Pesquisa rápida da Mapin: 2 minutos para contar como está o seu negócio no Google.">
+<meta property="og:title" content="Seu negócio no Google: você está aqui?">
+<meta property="og:description" content="Pesquisa rápida da Mapin. São 2 minutos, e no fim você pode pedir uma análise grátis do seu perfil.">
+<meta property="og:image" content="og.png">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#1C1117">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 340'%3E%3Cpath d='M120 340C72 272 0 204 0 120A120 120 0 0 1 240 120C240 204 168 272 120 340ZM166 120A46 46 0 1 0 74 120A46 46 0 1 0 166 120Z' fill='%23D03D35' fill-rule='evenodd'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Anton&family=Inter:wght@400;600;700&family=Permanent+Marker&display=swap">
+<style>
+/* Uma pergunta por tela; no topo, a rota do mapa com o pin andando a cada resposta. Identidade Mapin (manual v1.1). */
+:root{
+  --vinho:#1C1117; --vinho-2:#2A1A22; --papel:#F4EEDC; --papel-60:rgba(244,238,220,.62);
+  --linha:rgba(244,238,220,.14); --vermelho:#D03D35; --mostarda:#E9B434;
+  --f-titulo:"Abril Fatface",Georgia,"Times New Roman",serif;
+  --f-cartaz:"Anton","Arial Narrow",Impact,sans-serif;
+  --f-mao:"Permanent Marker","Comic Sans MS",cursive;
+  --f-texto:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--vinho);color:var(--papel);font:400 17px/1.5 var(--f-texto);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+/* rumos de carta náutica e grão */
+.fundo{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.fundo svg{position:absolute;right:-30vmax;bottom:-35vmax;width:110vmax;height:110vmax;opacity:.9}
+.fundo::after{content:"";position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.app{position:relative;z-index:1;min-height:100%;display:flex;flex-direction:column;max-width:640px;margin:0 auto;
+  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));
+  padding-top:calc(18px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+header{display:flex;align-items:center;gap:16px;min-height:44px}
+header .logo{height:26px;width:auto;flex:none}
+.rota{flex:1;min-width:0;height:44px;position:relative}
+.rota svg{width:100%;height:100%;overflow:visible}
+.rota .pin{position:absolute;top:-2px;width:20px;height:28px;margin-left:-10px;transition:left .6s cubic-bezier(.3,1.4,.5,1)}
+.rota[hidden]{display:block!important;visibility:hidden}
+main{flex:1;display:flex;flex-direction:column;justify-content:center;padding-block:28px}
+.tela{display:flex;flex-direction:column;gap:22px;animation:entra .45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes entra{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.tela{animation:none}.rota .pin{transition:none}.cai{animation:none!important}}
+.chapeu{font:400 15px/1 var(--f-cartaz);letter-spacing:.08em;text-transform:uppercase;color:var(--mostarda)}
+h1,h2{font-family:var(--f-titulo);font-weight:400;margin:0;text-wrap:balance;line-height:1.04}
+h1{font-size:clamp(46px,13vw,76px)}
+h2{font-size:clamp(28px,7.4vw,40px)}
+.recado{font-family:var(--f-mao);color:var(--vermelho);font-size:20px;transform:rotate(-3deg);display:inline-block}
+p{margin:0;color:var(--papel-60);max-width:34em}
+.dica{font-size:14px;color:var(--papel-60)}
+.intro-pin{width:74px;height:auto;align-self:flex-start;filter:drop-shadow(0 14px 14px rgba(0,0,0,.45))}
+.cai{animation:cai .9s cubic-bezier(.3,1.5,.5,1) both .15s}
+@keyframes cai{from{transform:translateY(-120px) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+/* opções */
+.opcoes{display:flex;flex-direction:column;gap:10px}
+.op{display:flex;align-items:center;gap:14px;width:100%;text-align:left;cursor:pointer;
+  font:600 17px/1.3 var(--f-texto);color:var(--papel);background:var(--vinho-2);
+  border:1.5px solid var(--linha);border-radius:14px;padding:15px 16px;transition:border-color .15s,background .15s,transform .1s}
+.op:hover{border-color:rgba(244,238,220,.35)}
+.op:active{transform:scale(.99)}
+.op:focus-visible,.btn:focus-visible,input:focus-visible,textarea:focus-visible{outline:2.5px solid var(--mostarda);outline-offset:2px}
+.op .marca{flex:none;width:22px;height:22px;border:2px solid var(--papel-60);border-radius:50%;display:grid;place-items:center}
+.op.multi .marca{border-radius:6px}
+.op[aria-pressed="true"]{border-color:var(--vermelho);background:rgba(208,61,53,.16)}
+.op[aria-pressed="true"] .marca{border-color:var(--vermelho);background:var(--vermelho)}
+.op[aria-pressed="true"] .marca::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--papel)}
+.op.multi[aria-pressed="true"] .marca::after{width:10px;height:6px;border-radius:0;background:none;border:solid var(--papel);border-width:0 0 2.5px 2.5px;transform:rotate(-45deg) translate(1px,-1px)}
+input[type=text],input[type=tel],textarea{width:100%;font:400 18px/1.4 var(--f-texto);color:var(--papel);background:var(--vinho-2);
+  border:1.5px solid var(--linha);border-radius:14px;padding:15px 16px}
+textarea{min-height:130px;resize:vertical}
+input::placeholder,textarea::placeholder{color:rgba(244,238,220,.38)}
+.outro-campo{margin-top:-2px}
+.acoes{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:6px}
+.btn{font:400 18px/1 var(--f-cartaz);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
+  color:var(--papel);background:var(--vermelho);border:0;border-radius:999px;padding:17px 28px;display:inline-flex;align-items:center;gap:10px;
+  box-shadow:0 10px 24px rgba(208,61,53,.28);transition:transform .1s,opacity .15s}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.35;cursor:not-allowed;box-shadow:none}
+.link{font:600 15px var(--f-texto);color:var(--papel-60);background:none;border:0;cursor:pointer;padding:8px 2px;text-decoration:underline;text-underline-offset:4px}
+.erro{color:#F08A82;font-size:14px;min-height:1em}
+footer{font-size:12px;color:rgba(244,238,220,.4);text-align:center;padding-top:10px}
+footer b{font-family:var(--f-cartaz);font-weight:400;letter-spacing:.08em}
+</style>
+</head>
+<body>
+<div class="fundo" aria-hidden="true">
+  <svg viewBox="-500 -500 1000 1000" id="rumos"></svg>
+</div>
+<div class="app">
+  <header>
+    <svg class="logo" viewBox="0 0 7218 2898" role="img" aria-label="mapin"><g fill="#F4EEDC"><path d="M0,1112.5l602.5,0l0,230c55,-170 176.25,-255 363.75,-255c187.5,0 301.25,90 341.25,270c58.333,-180 180.833,-270 367.5,-270c245,0 367.5,139.167 367.5,417.5l0,752.5l140,0l0,45l-692.5,0l0,-45l87.5,0l0,-812.5c0,-126.667 -10.833,-200.833 -32.5,-222.5c-10,-10 -23.333,-15 -40,-15c-48.333,0 -90.833,32.5 -127.5,97.5c-36.667,65 -55,147.5 -55,247.5l0,705l90,0l0,45l-642.5,0l0,-45l87.5,0l0,-812.5c0,-126.667 -10.833,-200.833 -32.5,-222.5c-10,-10 -23.333,-15 -40,-15c-46.667,0 -88.75,35.417 -126.25,106.25c-37.5,70.833 -56.25,155.417 -56.25,253.75l0,690l90,0l0,45l-692.5,0l0,-45l137.5,0l0,-1100l-137.5,0l0,-45Z"/><path d="M2790,1715l72.5,0l0,-192.5c0,-158.333 -8.75,-264.583 -26.25,-318.75c-17.5,-54.167 -51.25,-81.25 -101.25,-81.25c-30,0 -57.083,7.917 -81.25,23.75c-24.167,15.833 -36.25,37.5 -36.25,65c0,27.5 5,55.417 15,83.75l62.5,0c13.333,35 20,77.083 20,126.25c0,49.167 -20.833,91.667 -62.5,127.5c-41.667,35.833 -94.167,53.75 -157.5,53.75c-143.333,0 -215,-69.167 -215,-207.5c0,-205 174.167,-307.5 522.5,-307.5c198.333,0 335.417,33.75 411.25,101.25c75.833,67.5 113.75,191.25 113.75,371.25l0,507.5c0,86.667 24.167,130 72.5,130c56.667,0 90,-85.833 100,-257.5l37.5,2.5c-6.667,146.667 -34.167,247.5 -82.5,302.5c-48.333,55 -127.5,82.5 -237.5,82.5c-200,0 -315,-61.667 -345,-185c-21.667,63.333 -54.167,110 -97.5,140c-43.333,30 -106.667,45 -190,45c-246.667,0 -370,-100.833 -370,-302.5c0,-118.333 47.083,-199.583 141.25,-243.75c94.167,-44.167 238.75,-66.25 433.75,-66.25Zm-100,307.5c0,86.667 4.583,142.5 13.75,167.5c9.167,25 26.667,37.5 52.5,37.5c25.833,0 50,-21.25 72.5,-63.75c22.5,-42.5 33.75,-101.25 33.75,-176.25l0,-232.5l-17.5,0c-103.333,0 -155,75.833 -155,227.5l0,40Z"/><path d="M4420,1630c0,-171.667 -8.333,-287.083 -25,-346.25c-16.667,-59.167 -49.167,-88.75 -97.5,-88.75c-48.333,0 -91.667,31.25 -130,93.75c-38.333,62.5 -57.5,146.25 -57.5,251.250l0,457.5c0,71.667 14.167,132.5 42.5,182.5c28.333,50 70,75 125,75c55,0 92.5,-36.667 112.5,-110c20,-73.333 30,-201.667 30,-385l0,-130Zm-315,-517.5l0,197.5c65,-148.333 180,-222.5 345,-222.5c143.333,0 254.583,51.667 333.75,155c79.167,103.333 118.75,260 118.75,470c0,210 -42.917,365 -128.75,465c-85.833,100 -214.583,150 -386.25,150c-80,0 -140,-10 -180,-30c-40,-20 -72.5,-50.833 -97.5,-92.5l0,647.5l322.5,0l0,45l-925,0l0,-45l137.5,0l0,-1695l-132.5,0l0,-45l592.5,0Z"/><path d="M4937.5,1112.5l612.5,0l0,1145l140,0l0,45l-742.5,0l0,-45l137.5,0l0,-1100l-147.5,0l0,-45Z"/><path d="M5715,1112.5l602.5,0l0,230c26.667,-76.667 67.5,-138.333 122.5,-185c55,-46.667 138.333,-70 250,-70c258.333,0 387.5,139.167 387.5,417.5l0,752.5l140,0l0,45l-707.5,0l0,-45l102.5,0l0,-812.5c0,-100 -6.667,-164.583 -20,-193.75c-13.333,-29.167 -37.5,-43.75 -72.5,-43.75c-53.333,0 -100.417,35 -141.25,105c-40.833,70 -61.25,155 -61.25,255l0,690l107.5,0l0,45l-710,0l0,-45l137.5,0l0,-1100l-137.5,0l0,-45Z"/></g><path fill="#D03D35" d="M5313.75,1000c-141.176,-200 -352.941,-400 -352.941,-647.059c0,-194.924 158.017,-352.941 352.941,-352.941c194.924,0 352.941,158.017 352.941,352.941c0,247.059 -211.765,447.059 -352.941,647.059Zm135.294,-647.059c0,-74.721 -60.573,-135.294 -135.294,-135.294c-74.721,0 -135.294,60.573 -135.294,135.294c0,74.721 60.573,135.294 135.294,135.294c74.721,0 135.294,-60.573 135.294,-135.294Z"/></svg>
+    <div class="rota" id="rota" hidden aria-hidden="true">
+      <svg viewBox="0 0 300 44" preserveAspectRatio="none"><path id="trilha" d="M4 34 C 60 14, 100 42, 150 28 S 240 12, 296 30" fill="none" stroke="rgba(244,238,220,.35)" stroke-width="1.6" stroke-dasharray="3 5" vector-effect="non-scaling-stroke"/></svg>
+      <svg class="pin" id="pinRota" viewBox="0 0 240 340"><path d="M120 340C72 272 0 204 0 120A120 120 0 0 1 240 120C240 204 168 272 120 340ZM166 120A46 46 0 1 0 74 120A46 46 0 1 0 166 120Z" fill="#D03D35" fill-rule="evenodd"/></svg>
+    </div>
+  </header>
+  <main id="palco" aria-live="polite"></main>
+  <footer><b>MAPIN</b> · Seu lugar no mapa digital</footer>
+</div>
+
+<script>
+(function(){
+  // Depósito das respostas: o Google Forms "Pesquisa Mapin · Seu negócio no Google"
+  var FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfbDTGZ4YDLhhI_W3F4WeAApP-DZXx_rc4bs9NEDG_Mr1tP6A/formResponse";
+  var Q = [
+    {id:1380366237, tipo:"texto", t:"Que tipo de negócio você tem?", ph:"Ex.: ótica, salão, peixaria, clínica…", obrig:true},
+    {id:365408307, tipo:"um", t:"Seu negócio aparece no Google, no mapa?", op:["Sim","Não","Não sei"]},
+    {id:2069553402, tipo:"um", t:"Quando foi a última vez que você olhou o seu perfil no Google?", op:["Nesta semana","Neste mês","Faz meses","Nunca olhei"]},
+    {id:552975754, tipo:"varios", t:"Como está o seu perfil hoje?", dica:"Pode marcar mais de uma.", op:["Poucas fotos ou fotos antigas","Horário ou telefone errado","Avaliações sem resposta","Poucas avaliações","Está tudo certo"], outro:true},
+    {id:1846051349, tipo:"um", t:"O que mais te impede de cuidar do seu perfil?", op:["Falta de tempo","Não sei mexer","Tenho medo de fazer errado","Acho que não faz diferença"], outro:true},
+    {id:1692825374, tipo:"um", t:"Se tivesse um passo a passo para você mesmo arrumar, como você preferia?", op:["Vídeos curtos no celular","Uma lista para ir marcando","Alguém me explicando por áudio","Prefiro pagar alguém para fazer"], outro:true},
+    {id:1747540809, tipo:"um", t:"Quanto tempo por semana você teria para isso?", op:["Até 15 minutos","30 minutos","1 hora","Não tenho tempo"]},
+    {id:1372833848, tipo:"longo", t:"Se mais clientes te achassem no Google, o que isso mudaria para você?", dica:"Ex.: vender mais, não depender só de indicação, lotar a agenda.", ph:"Escreva do seu jeito…", pular:true},
+    {id:2043095249, tipo:"um", t:"Quer receber grátis uma análise do seu perfil no Google?", op:["Sim, quero","Não, obrigado(a)"]},
+    {id:1420288845, tipo:"zap", t:"Qual é o seu WhatsApp?", dica:"Com DDD. Só será usado para te enviar a análise.", ph:"(69) 9 0000-0000", se:function(r){return r[2043095249]==="Sim, quero"}}
+  ];
+  var OUTRO = "Outro";
+  var resp = {}, outroTxt = {}, passo = -1;
+  var palco = document.getElementById("palco"), rota = document.getElementById("rota"), pinRota = document.getElementById("pinRota");
+
+  // rumos de carta náutica (32 linhas)
+  var r = document.getElementById("rumos"), s = "";
+  for (var i=0;i<32;i++){var a=i*Math.PI/16, f=(i%4===0)?.16:.07;
+    s+='<line x1="0" y1="0" x2="'+(Math.cos(a)*500).toFixed(1)+'" y2="'+(Math.sin(a)*500).toFixed(1)+'" stroke="rgba(244,238,220,'+f+')" stroke-width="1"/>';}
+  s+='<circle r="150" fill="none" stroke="rgba(233,180,52,.14)"/><circle r="260" fill="none" stroke="rgba(233,180,52,.09)"/>';
+  r.innerHTML = s;
+
+  function el(tag, attrs, html){var e=document.createElement(tag); for(var k in attrs||{}) e.setAttribute(k, attrs[k]); if(html!=null) e.innerHTML=html; return e;}
+  function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function visiveis(){return Q.filter(function(q){return !q.se || q.se(resp)})}
+  function moverPin(){
+    var lista = visiveis(), n = lista.length, idx = Math.max(0, lista.indexOf(Q[passo]));
+    rota.hidden = passo < 0 || passo >= Q.length;
+    var trilha = document.getElementById("trilha"), L = trilha.getTotalLength(), p = trilha.getPointAtLength(L*(idx/(n-1||1)));
+    var w = rota.clientWidth; pinRota.style.left = (p.x/300*w)+"px"; pinRota.style.top = (p.y/44*44 - 28)+"px";
+  }
+  function proximo(){
+    var i = passo + 1;
+    while (i < Q.length && Q[i].se && !Q[i].se(resp)) i++;
+    if (i >= Q.length) return enviar();
+    passo = i; mostrar();
+  }
+  function voltar(){
+    var i = passo - 1;
+    while (i >= 0 && Q[i].se && !Q[i].se(resp)) i--;
+    passo = i; if (i < 0) inicio(); else mostrar();
+  }
+
+  function inicio(){
+    passo = -1; rota.hidden = true; palco.innerHTML = "";
+    var t = el("section",{class:"tela"});
+    t.innerHTML = '<svg class="intro-pin cai" viewBox="0 0 240 340" aria-hidden="true"><path d="M120 340C72 272 0 204 0 120A120 120 0 0 1 240 120C240 204 168 272 120 340ZM166 120A46 46 0 1 0 74 120A46 46 0 1 0 166 120Z" fill="#D03D35" fill-rule="evenodd"/></svg>'+
+      '<div class="chapeu">Pesquisa rápida · 2 minutos</div>'+
+      '<h1>Seu negócio no Google</h1>'+
+      '<span class="recado">você está aqui?</span>'+
+      '<p>São 9 perguntinhas, quase todas de tocar e seguir. Estou montando um material para ajudar negócios a serem mais encontrados no Google, e a sua resposta faz toda a diferença.</p>'+
+      '<p class="dica">— Nayara, da Mapin</p>';
+    var a = el("div",{class:"acoes"}); var b = el("button",{class:"btn",type:"button"},"Começar →");
+    b.onclick = proximo; a.appendChild(b); t.appendChild(a); palco.appendChild(t); b.focus({preventScroll:true});
+  }
+
+  function mostrar(){
+    var q = Q[passo], lista = visiveis(), num = lista.indexOf(q)+1;
+    palco.innerHTML = ""; moverPin();
+    var t = el("section",{class:"tela"});
+    t.appendChild(el("div",{class:"chapeu"}, "Pergunta "+num+" de "+lista.length));
+    t.appendChild(el("h2",{}, esc(q.t)));
+    if (q.dica) t.appendChild(el("p",{class:"dica"}, esc(q.dica)));
+    var acoes = el("div",{class:"acoes"}), btn = el("button",{class:"btn",type:"button"},"Continuar →"), erro = el("div",{class:"erro",role:"alert"});
+
+    if (q.tipo==="um" || q.tipo==="varios"){
+      var multi = q.tipo==="varios", box = el("div",{class:"opcoes",role:multi?"group":"radiogroup","aria-label":q.t});
+      var ops = q.op.concat(q.outro?[OUTRO]:[]);
+      var campoOutro = el("input",{type:"text",class:"outro-campo",id:"outro-"+q.id,placeholder:"Escreva aqui…","aria-label":"Outro: escreva"});
+      campoOutro.hidden = true; campoOutro.value = outroTxt[q.id]||"";
+      function marcado(o){var v=resp[q.id]; return multi ? (v||[]).indexOf(o)>=0 : v===o}
+      function pronto(){var v=resp[q.id], tem = multi ? (v&&v.length) : !!v;
+        if (tem && marcado(OUTRO) && !campoOutro.value.trim()) tem=false; btn.disabled=!tem;}
+      ops.forEach(function(o){
+        var b = el("button",{class:"op"+(multi?" multi":""),type:"button","aria-pressed":marcado(o)?"true":"false",role:multi?"checkbox":"radio","aria-checked":marcado(o)?"true":"false"},
+          '<span class="marca" aria-hidden="true"></span><span>'+esc(o)+'</span>');
+        b.onclick = function(){
+          if (multi){ var v = (resp[q.id]||[]).slice(), k=v.indexOf(o);
+            if (k>=0) v.splice(k,1); else { if (o==="Está tudo certo") v=[]; else { var z=v.indexOf("Está tudo certo"); if(z>=0) v.splice(z,1);} v.push(o);} resp[q.id]=v; }
+          else resp[q.id]=o;
+          box.querySelectorAll(".op").forEach(function(x,j){var on=marcado(ops[j]); x.setAttribute("aria-pressed",on);x.setAttribute("aria-checked",on);});
+          campoOutro.hidden = !marcado(OUTRO); if (!campoOutro.hidden) campoOutro.focus();
+          pronto();
+          if (!multi && o!==OUTRO) setTimeout(proximo, 260);
+        };
+        box.appendChild(b);
+      });
+      campoOutro.oninput = function(){outroTxt[q.id]=campoOutro.value; pronto();};
+      campoOutro.hidden = !marcado(OUTRO);
+      t.appendChild(box); t.appendChild(campoOutro); pronto();
+      if (multi || q.outro){ acoes.appendChild(btn); }
+    } else {
+      var campo = q.tipo==="longo" ? el("textarea",{id:"c-"+q.id,placeholder:q.ph||""}) :
+        el("input",{type:q.tipo==="zap"?"tel":"text",id:"c-"+q.id,placeholder:q.ph||"",inputmode:q.tipo==="zap"?"tel":"text",autocomplete:q.tipo==="zap"?"tel":"off"});
+      campo.value = resp[q.id]||""; campo.setAttribute("aria-label", q.t);
+      function ok(){var v=campo.value.trim(); if(q.tipo==="zap") return v.replace(/\D/g,"").length>=10; return !q.obrig || v.length>0;}
+      campo.oninput = function(){resp[q.id]=campo.value; btn.disabled=!ok(); erro.textContent="";};
+      campo.onkeydown = function(e){ if(e.key==="Enter" && q.tipo!=="longo"){ e.preventDefault(); btn.click(); } };
+      t.appendChild(campo); btn.disabled = !ok(); acoes.appendChild(btn);
+      if (q.pular){ var pl = el("button",{class:"link",type:"button"},"Pular"); pl.onclick=function(){resp[q.id]="";proximo();}; acoes.appendChild(pl); }
+      setTimeout(function(){campo.focus({preventScroll:true})}, 60);
+    }
+    btn.onclick = function(){ if(!btn.disabled) proximo(); };
+    if (passo===Q.length-1 || (Q[passo+1] && Q[passo+1].se && !Q[passo+1].se(resp) && passo+1===Q.length-1)) btn.textContent = "Enviar respostas";
+    var v = el("button",{class:"link",type:"button"},"← Voltar"); v.onclick = voltar; acoes.appendChild(v);
+    t.appendChild(acoes); t.appendChild(erro); palco.appendChild(t);
+  }
+
+  function enviar(){
+    palco.innerHTML = ""; rota.hidden = true;
+    var t = el("section",{class:"tela"}, '<div class="chapeu">Enviando…</div><h2>Guardando as suas respostas no mapa</h2>');
+    palco.appendChild(t);
+    var dados = new URLSearchParams();
+    Q.forEach(function(q){
+      if (q.se && !q.se(resp)) return;
+      var v = resp[q.id]; if (v==null || v==="" || (Array.isArray(v)&&!v.length)) return;
+      (Array.isArray(v)?v:[v]).forEach(function(x){
+        if (x===OUTRO){ dados.append("entry."+q.id, "__other_option__"); dados.append("entry."+q.id+".other_option_response", (outroTxt[q.id]||"").trim()); }
+        else dados.append("entry."+q.id, String(x).trim());
+      });
+    });
+    fetch(FORM, {method:"POST", mode:"no-cors", body:dados}).then(fim, falha);
+  }
+  function fim(){
+    var quer = resp[2043095249]==="Sim, quero";
+    palco.innerHTML = "";
+    var t = el("section",{class:"tela"});
+    t.innerHTML = '<svg class="intro-pin cai" viewBox="0 0 240 340" aria-hidden="true"><path d="M120 340C72 272 0 204 0 120A120 120 0 0 1 240 120C240 204 168 272 120 340ZM166 120A46 46 0 1 0 74 120A46 46 0 1 0 166 120Z" fill="#D03D35" fill-rule="evenodd"/></svg>'+
+      '<div class="chapeu">Pronto!</div><h1>Obrigada!</h1>'+
+      '<span class="recado">você está no mapa</span>'+
+      '<p>'+(quer ? 'Recebi o seu WhatsApp. Vou olhar o seu perfil no Google e te mando a análise por lá, sem custo.' : 'Suas respostas vão me ajudar a montar um material simples para negócios como o seu.')+'</p>'+
+      '<p class="dica">Mapin · Seu lugar no mapa digital · Instagram @mapin.online</p>';
+    palco.appendChild(t);
+  }
+  function falha(){
+    palco.innerHTML = "";
+    var t = el("section",{class:"tela"}, '<div class="chapeu">Ops</div><h2>Não consegui enviar agora</h2><p>Parece que a internet caiu. Suas respostas continuam aqui: é só tentar de novo.</p>');
+    var a = el("div",{class:"acoes"}), b = el("button",{class:"btn",type:"button"},"Tentar de novo"); b.onclick = enviar; a.appendChild(b); t.appendChild(a); palco.appendChild(t);
+  }
+  window.addEventListener("resize", function(){ if (passo>=0 && passo<Q.length) moverPin(); });
+  inicio();
+})();
+</script>
+</body>
+</html>
