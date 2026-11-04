@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Seu negócio no Google · Mapin</title>
+<title>Seu negócio no mapa · Pesquisa Mapin</title>
 <meta name="description" content="Pesquisa rápida da Mapin: 2 minutos para contar como está o seu negócio no Google.">
-<meta property="og:title" content="Seu negócio no Google: você está aqui?">
+<meta property="og:title" content="Seu negócio no mapa: você está aqui?">
 <meta property="og:description" content="Pesquisa rápida da Mapin. São 2 minutos, e no fim você pode pedir uma análise grátis do seu perfil.">
 <meta property="og:image" content="og.png">
 <meta property="og:type" content="website">
@@ -88,6 +88,9 @@ footer b{font-family:var(--f-cartaz);font-weight:400;letter-spacing:.08em}
 </style>
 </head>
 <body>
+<form name="pesquisa" method="POST" data-netlify="true" netlify-honeypot="campo-isca" hidden>
+  <input name="campo-isca"><input name="negocio"><input name="aparece_no_mapa"><input name="ultima_vez_que_olhou"><input name="como_esta_o_perfil"><input name="o_que_impede"><input name="formato_preferido"><input name="tempo_por_semana"><textarea name="o_que_mudaria"></textarea><input name="quer_analise"><input name="whatsapp">
+</form>
 <div class="fundo" aria-hidden="true">
   <svg viewBox="-500 -500 1000 1000" id="rumos"></svg>
 </div>
@@ -106,18 +109,18 @@ footer b{font-family:var(--f-cartaz);font-weight:400;letter-spacing:.08em}
 <script>
 (function(){
   // Depósito das respostas: o Google Forms "Pesquisa Mapin · Seu negócio no Google"
-  var FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfbDTGZ4YDLhhI_W3F4WeAApP-DZXx_rc4bs9NEDG_Mr1tP6A/formResponse";
+  // As respostas ficam no próprio Netlify (Forms), no mesmo endereço da página.
   var Q = [
-    {id:1380366237, tipo:"texto", t:"Que tipo de negócio você tem?", ph:"Ex.: ótica, salão, peixaria, clínica…", obrig:true},
-    {id:365408307, tipo:"um", t:"Seu negócio aparece no Google, no mapa?", op:["Sim","Não","Não sei"]},
-    {id:2069553402, tipo:"um", t:"Quando foi a última vez que você olhou o seu perfil no Google?", op:["Nesta semana","Neste mês","Faz meses","Nunca olhei"]},
-    {id:552975754, tipo:"varios", t:"Como está o seu perfil hoje?", dica:"Pode marcar mais de uma.", op:["Poucas fotos ou fotos antigas","Horário ou telefone errado","Avaliações sem resposta","Poucas avaliações","Está tudo certo"], outro:true},
-    {id:1846051349, tipo:"um", t:"O que mais te impede de cuidar do seu perfil?", op:["Falta de tempo","Não sei mexer","Tenho medo de fazer errado","Acho que não faz diferença"], outro:true},
-    {id:1692825374, tipo:"um", t:"Se tivesse um passo a passo para você mesmo arrumar, como você preferia?", op:["Vídeos curtos no celular","Uma lista para ir marcando","Alguém me explicando por áudio","Prefiro pagar alguém para fazer"], outro:true},
-    {id:1747540809, tipo:"um", t:"Quanto tempo por semana você teria para isso?", op:["Até 15 minutos","30 minutos","1 hora","Não tenho tempo"]},
-    {id:1372833848, tipo:"longo", t:"Se mais clientes te achassem no Google, o que isso mudaria para você?", dica:"Ex.: vender mais, não depender só de indicação, lotar a agenda.", ph:"Escreva do seu jeito…", pular:true},
-    {id:2043095249, tipo:"um", t:"Quer receber grátis uma análise do seu perfil no Google?", op:["Sim, quero","Não, obrigado(a)"]},
-    {id:1420288845, tipo:"zap", t:"Qual é o seu WhatsApp?", dica:"Com DDD. Só será usado para te enviar a análise.", ph:"(69) 9 0000-0000", se:function(r){return r[2043095249]==="Sim, quero"}}
+    {id:1380366237, nome:"negocio", tipo:"texto", t:"Que tipo de negócio você tem?", ph:"Ex.: ótica, salão, peixaria, clínica…", obrig:true},
+    {id:365408307, nome:"aparece_no_mapa", tipo:"um", t:"Seu negócio aparece no Google, no mapa?", op:["Sim","Não","Não sei"]},
+    {id:2069553402, nome:"ultima_vez_que_olhou", tipo:"um", t:"Quando foi a última vez que você olhou o seu perfil no Google?", op:["Nesta semana","Neste mês","Faz meses","Nunca olhei"]},
+    {id:552975754, nome:"como_esta_o_perfil", tipo:"varios", t:"Como está o seu perfil hoje?", dica:"Pode marcar mais de uma.", op:["Poucas fotos ou fotos antigas","Horário ou telefone errado","Avaliações sem resposta","Poucas avaliações","Está tudo certo"], outro:true},
+    {id:1846051349, nome:"o_que_impede", tipo:"um", t:"O que mais te impede de cuidar do seu perfil?", op:["Falta de tempo","Não sei mexer","Tenho medo de fazer errado","Acho que não faz diferença"], outro:true},
+    {id:1692825374, nome:"formato_preferido", tipo:"um", t:"Se tivesse um passo a passo para você mesmo arrumar, como você preferia?", op:["Vídeos curtos no celular","Uma lista para ir marcando","Alguém me explicando por áudio","Prefiro pagar alguém para fazer"], outro:true},
+    {id:1747540809, nome:"tempo_por_semana", tipo:"um", t:"Quanto tempo por semana você teria para isso?", op:["Até 15 minutos","30 minutos","1 hora","Não tenho tempo"]},
+    {id:1372833848, nome:"o_que_mudaria", tipo:"longo", t:"Se mais clientes te achassem no Google, o que isso mudaria para você?", dica:"Ex.: vender mais, não depender só de indicação, lotar a agenda.", ph:"Escreva do seu jeito…", pular:true},
+    {id:2043095249, nome:"quer_analise", tipo:"um", t:"Quer receber grátis uma análise do seu perfil no Google?", op:["Sim, quero","Não, obrigado(a)"]},
+    {id:1420288845, nome:"whatsapp", tipo:"zap", t:"Qual é o seu WhatsApp?", dica:"Com DDD. Só será usado para te enviar a análise.", ph:"(69) 9 0000-0000", se:function(r){return r[2043095249]==="Sim, quero"}}
   ];
   var OUTRO = "Outro";
   var resp = {}, outroTxt = {}, passo = -1;
@@ -156,7 +159,7 @@ footer b{font-family:var(--f-cartaz);font-weight:400;letter-spacing:.08em}
     var t = el("section",{class:"tela"});
     t.innerHTML = '<svg class="intro-pin cai" viewBox="0 0 240 340" aria-hidden="true"><path d="M120 340C72 272 0 204 0 120A120 120 0 0 1 240 120C240 204 168 272 120 340ZM166 120A46 46 0 1 0 74 120A46 46 0 1 0 166 120Z" fill="#D03D35" fill-rule="evenodd"/></svg>'+
       '<div class="chapeu">Pesquisa rápida · 2 minutos</div>'+
-      '<h1>Seu negócio no Google</h1>'+
+      '<h1>Seu negócio no mapa</h1>'+
       '<span class="recado">você está aqui?</span>'+
       '<p>São 9 perguntinhas, quase todas de tocar e seguir. Estou montando um material para ajudar negócios a serem mais encontrados no Google, e a sua resposta faz toda a diferença.</p>'+
       '<p class="dica">— Nayara, da Mapin</p>';
@@ -220,16 +223,15 @@ footer b{font-family:var(--f-cartaz);font-weight:400;letter-spacing:.08em}
     palco.innerHTML = ""; rota.hidden = true;
     var t = el("section",{class:"tela"}, '<div class="chapeu">Enviando…</div><h2>Guardando as suas respostas no mapa</h2>');
     palco.appendChild(t);
-    var dados = new URLSearchParams();
+    var dados = new URLSearchParams(); dados.append("form-name","pesquisa");
     Q.forEach(function(q){
       if (q.se && !q.se(resp)) return;
       var v = resp[q.id]; if (v==null || v==="" || (Array.isArray(v)&&!v.length)) return;
-      (Array.isArray(v)?v:[v]).forEach(function(x){
-        if (x===OUTRO){ dados.append("entry."+q.id, "__other_option__"); dados.append("entry."+q.id+".other_option_response", (outroTxt[q.id]||"").trim()); }
-        else dados.append("entry."+q.id, String(x).trim());
-      });
+      var lista = (Array.isArray(v)?v:[v]).map(function(x){ return x===OUTRO ? "Outro: "+(outroTxt[q.id]||"").trim() : String(x).trim(); });
+      dados.append(q.nome, lista.join("; "));
     });
-    fetch(FORM, {method:"POST", mode:"no-cors", body:dados}).then(fim, falha);
+    fetch("/", {method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:dados.toString()})
+      .then(function(r){ if(!r.ok) throw new Error(r.status); fim(); }, falha).catch(falha);
   }
   function fim(){
     var quer = resp[2043095249]==="Sim, quero";
